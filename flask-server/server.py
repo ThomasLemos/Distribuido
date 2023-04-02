@@ -1,51 +1,17 @@
-from flask import Flask, request, jsonify
-import numpy as np
-import sounddevice as sd
-import scipy.io.wavfile as wav
+from flask import Flask, request
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
-duration = None
-audio = None
-
-@app.route('/record', methods=['POST'])
-def record():
-    global audio, duration
-    
-    if audio is None:
-        duration = 0
-        audio = []
-
-        def audio_callback(indata, frames, time, status):
-            audio.append(indata.copy())
-            duration = len(audio) / sd.default.samplerate
-        
-        with sd.InputStream(callback=audio_callback):
-            while True:
-                if duration >= 0:
-                    break
-        
-        if len(audio) > 0:
-            audio = np.vstack(audio)
-            wav.write('output.wav', sd.default.samplerate, audio.T)
-            return jsonify({'status': 'success'})
-        else:
-            return jsonify({'status': 'no audio recorded'})
-    else:
-        return jsonify({'status': 'recording in progress'})
+@app.route('/api/save-audio', methods=['POST'])
+def save_audio():
+    with open('audio/recording.wav', 'wb') as f:
+        f.write(request.data)
+    return 'Audio saved successfully!'
 
 if __name__ == '__main__':
-    app.run(debug=True)
-
-
-
-
-
-
-
-
-
-
+    app.run()
 
 
 

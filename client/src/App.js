@@ -9,12 +9,20 @@ function App() {
   const startRecording = () => {
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
       const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorder.ondataavailable = e => {
-        const audioBlob = new Blob([e.data], { type: 'audio/wav' });
+      const audioChunks = [];
+
+      mediaRecorder.addEventListener("dataavailable", event => {
+        audioChunks.push(event.data);
+      });
+
+      mediaRecorder.addEventListener("stop", () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
         const audioUrl = URL.createObjectURL(audioBlob);
         audioRef.current.src = audioUrl;
         setStatus('Audio recorded successfully!');
-      };
+        fetch('/api/save-audio', { method: 'POST', body: audioBlob });
+      });
+
       mediaRecorder.start();
       mediaRecorderRef.current = mediaRecorder;
       setRecording(true);
@@ -48,12 +56,6 @@ function App() {
 }
 
 export default App;
-
-
-
-
-
-
 
 
 
