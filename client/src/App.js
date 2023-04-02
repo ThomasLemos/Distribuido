@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import './App.css';
 
 function App() {
   const [recording, setRecording] = useState(false);
@@ -47,10 +48,11 @@ function App() {
   };
 
   return (
-    <div>
-      <button onClick={handleRecordButtonClick}>{recording ? 'Stop Recording' : 'Start Recording'}</button>
-      <audio ref={audioRef} controls />
-      <p>{status}</p>
+    <div className="container">
+      <button className={recording ? 'stop-button' : 'record-button'} onClick={handleRecordButtonClick}>
+      </button>
+      <audio ref={audioRef} controls className="audioposition"/>
+      <p className="message">{status}</p>
     </div>
   );
 }

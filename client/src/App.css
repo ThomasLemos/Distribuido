@@ -36,3 +36,84 @@
     transform: rotate(360deg);
   }
 }
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.message {
+  position: absolute;
+  top: 85%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+body {
+  background-color: rgb(40, 44, 52);
+}
+
+.record-button {
+  position: absolute;
+  top: 80%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  background-color: rgb(255, 255, 255);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.record-button::before {
+  content: "";
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  background-color: rgb(172, 0, 0);
+  border-radius: 50%;
+}
+
+.record-button::after {
+  content: "";
+  position: absolute;
+  width: 35px;
+  height: 35px;
+  background-color: rgb(224, 4, 4);
+  border-radius: 50%;
+
+}
+
+.stop-button {
+  position: absolute;
+  top: 80%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: white;
+}
+
+.stop-button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 40%;
+  height: 40%;
+  background-color: red;
+}
+
+.audioposition{
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
