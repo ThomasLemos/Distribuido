@@ -1,69 +1,68 @@
-import React, { useState } from 'react';
+import { useState, useRef } from 'react';
 
 function App() {
   const [recording, setRecording] = useState(false);
-  const [duration, setDuration] = useState(5);
+  const [status, setStatus] = useState('');
+  const mediaRecorderRef = useRef(null);
+  const audioRef = useRef(null);
 
-  // Function to handle starting the audio recording
-  const startRecording = async () => {
-    try {
-      // Send POST request to Flask endpoint to start recording
-      const response = await fetch('/start-recording', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ duration }),
-      });
-
-      // Update recording state to true
+  const startRecording = () => {
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorder.ondataavailable = e => {
+        const audioBlob = new Blob([e.data], { type: 'audio/wav' });
+        const audioUrl = URL.createObjectURL(audioBlob);
+        audioRef.current.src = audioUrl;
+        setStatus('Audio recorded successfully!');
+      };
+      mediaRecorder.start();
+      mediaRecorderRef.current = mediaRecorder;
       setRecording(true);
-    } catch (error) {
-      console.error('Error starting recording:', error);
-    }
+      setStatus('Recording...');
+    }).catch(error => {
+      console.log(error);
+      setStatus('Cannot access microphone');
+    });
   };
 
-  // Function to handle stopping the audio recording
-  const stopRecording = async () => {
-    try {
-      // Send POST request to Flask endpoint to stop recording
-      const response = await fetch('/stop-recording', {
-        method: 'POST',
-      });
+  const stopRecording = () => {
+    mediaRecorderRef.current.stop();
+    setRecording(false);
+  };
 
-      // Update recording state to false
-      setRecording(false);
-    } catch (error) {
-      console.error('Error stopping recording:', error);
+  const handleRecordButtonClick = () => {
+    if (!recording) {
+      startRecording();
+    } else {
+      stopRecording();
     }
   };
 
   return (
     <div>
-      <h1>Record Audio</h1>
-
-      <div>
-        <label htmlFor="duration-input">Duration (seconds):</label>
-        <input
-          type="number"
-          id="duration-input"
-          value={duration}
-          onChange={(event) => setDuration(event.target.value)}
-        />
-      </div>
-
-      {!recording && (
-        <button onClick={startRecording}>Start Recording</button>
-      )}
-
-      {recording && (
-        <button onClick={stopRecording}>Stop Recording</button>
-      )}
+      <button onClick={handleRecordButtonClick}>{recording ? 'Stop Recording' : 'Start Recording'}</button>
+      <audio ref={audioRef} controls />
+      <p>{status}</p>
     </div>
   );
 }
 
 export default App;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

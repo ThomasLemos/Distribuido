@@ -1,45 +1,58 @@
 from flask import Flask, request, jsonify
-import soundfile as sf
 import numpy as np
 import sounddevice as sd
+import scipy.io.wavfile as wav
 
 app = Flask(__name__)
 
-def record_audio(duration):
-    # Record audio using sounddevice library
-    fs = 44100  # Sample rate
-    frames = int(duration * fs)  # Number of frames
-    recording = sd.rec(frames, samplerate=fs, channels=1)
+duration = None
+audio = None
 
-    # Wait until recording is finished
-    sd.wait()
+@app.route('/record', methods=['POST'])
+def record():
+    global audio, duration
+    
+    if audio is None:
+        duration = 0
+        audio = []
 
-    # Save recording to WAV file
-    sf.write('audio/recorded_audio.wav', recording, fs)
-
-def stop_recording():
-    # Stop recording by stopping the sounddevice stream
-    sd.stop()
-
-@app.route('/start-recording', methods=['POST'])
-def start_recording():
-    # Get duration of recording in seconds from client request
-    duration = request.json['duration']
-
-    # Start recording audio
-    record_audio(duration)
-
-    return jsonify({'message': 'Audio recording started.'})
-
-@app.route('/stop-recording', methods=['POST'])
-def end_recording():
-    # Stop recording audio
-    stop_recording()
-
-    return jsonify({'message': 'Audio recording stopped.'})
+        def audio_callback(indata, frames, time, status):
+            audio.append(indata.copy())
+            duration = len(audio) / sd.default.samplerate
+        
+        with sd.InputStream(callback=audio_callback):
+            while True:
+                if duration >= 0:
+                    break
+        
+        if len(audio) > 0:
+            audio = np.vstack(audio)
+            wav.write('output.wav', sd.default.samplerate, audio.T)
+            return jsonify({'status': 'success'})
+        else:
+            return jsonify({'status': 'no audio recorded'})
+    else:
+        return jsonify({'status': 'recording in progress'})
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
