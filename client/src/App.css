@@ -32,6 +32,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -111,9 +112,15 @@ body {
   background-color: red;
 }
 
-.audioposition{
+.audioposition {
   position: absolute;
   top: 70%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+.file-input {
+  margin-top: 690px;
+  margin-bottom: 50px;
+  margin-left: 150px;
 }

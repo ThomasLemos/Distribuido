@@ -47,11 +47,23 @@ function App() {
     }
   };
 
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+      audioRef.current.src = reader.result;
+      setStatus('Audio file loaded successfully!');
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <div className="container">
       <button className={recording ? 'stop-button' : 'record-button'} onClick={handleRecordButtonClick}>
       </button>
-      <audio ref={audioRef} controls className="audioposition"/>
+      <audio ref={audioRef} controls className="audioposition" />
+      <label htmlFor="fileInput">Select a WAV file</label>
+      <input id="fileInput" type="file" accept="audio/wav" className="file-input" onChange={handleFileSelect} />
       <p className="message">{status}</p>
     </div>
   );
