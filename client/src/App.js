@@ -21,7 +21,14 @@ function App() {
         const audioUrl = URL.createObjectURL(audioBlob);
         audioRef.current.src = audioUrl;
         setStatus('Audio recorded successfully!');
-        fetch('/api/save-audio', { method: 'POST', body: audioBlob });
+        const fileName = window.prompt('Please enter a file name', 'recording.wav');
+        if (fileName) {
+          fetch(`/api/save-audio?file_name=${fileName}`, { method: 'POST', body: audioBlob })
+            .then(response => response.text())
+            .then(fileName => setStatus(`Audio saved successfully as ${fileName}!`))
+            .catch(() => setStatus('Error saving audio file'));
+
+        }
       });
 
       mediaRecorder.start();
@@ -70,6 +77,9 @@ function App() {
 }
 
 export default App;
+
+
+
 
 
 
