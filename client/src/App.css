@@ -114,13 +114,23 @@ body {
 
 .audioposition {
   position: absolute;
+  top: 7%;
+  left: 40%;
+  width: 20%;
+}
+
+.file-input {
+  margin-top: 115px;
+  margin-bottom: 50px;
+  margin-left: 150px;
+}
+
+audio.top {
+  position: absolute;
   top: 70%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
 
-.file-input {
-  margin-top: 690px;
-  margin-bottom: 50px;
-  margin-left: 150px;
-}
+
+

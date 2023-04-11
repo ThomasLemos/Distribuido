@@ -4,8 +4,11 @@ import './App.css';
 function App() {
   const [recording, setRecording] = useState(false);
   const [status, setStatus] = useState('');
+  const [audioSrc, setAudioSrc] = useState('');
+  const [selectedAudioSrc, setSelectedAudioSrc] = useState('');
   const mediaRecorderRef = useRef(null);
   const audioRef = useRef(null);
+  const selectedAudioRef = useRef(null);
 
   const startRecording = () => {
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
@@ -19,7 +22,7 @@ function App() {
       mediaRecorder.addEventListener("stop", () => {
         const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
         const audioUrl = URL.createObjectURL(audioBlob);
-        audioRef.current.src = audioUrl;
+        setAudioSrc(audioUrl);
         setStatus('Audio recorded successfully!');
         const fileName = window.prompt('Please enter a file name', 'recording.wav');
         if (fileName) {
@@ -58,7 +61,8 @@ function App() {
     const file = event.target.files[0];
     const reader = new FileReader();
     reader.onload = () => {
-      audioRef.current.src = reader.result;
+      const audioUrl = reader.result;
+      setSelectedAudioSrc(audioUrl);
       setStatus('Audio file loaded successfully!');
     };
     reader.readAsDataURL(file);
@@ -68,7 +72,8 @@ function App() {
     <div className="container">
       <button className={recording ? 'stop-button' : 'record-button'} onClick={handleRecordButtonClick}>
       </button>
-      <audio ref={audioRef} controls className="audioposition" />
+      <audio ref={audioRef} controls className="top audioposition" src={audioSrc} />
+      <audio ref={selectedAudioRef} controls className="audioposition" src={selectedAudioSrc} />
       <label htmlFor="fileInput">Select a WAV file</label>
       <input id="fileInput" type="file" accept="audio/wav" className="file-input" onChange={handleFileSelect} />
       <p className="message">{status}</p>
@@ -77,6 +82,7 @@ function App() {
 }
 
 export default App;
+
 
 
 
