@@ -1,7 +1,7 @@
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import './App.css';
 
-function App() {
+function Component1() {
   const [recording, setRecording] = useState(false);
   const [status, setStatus] = useState('');
   const [audioSrc, setAudioSrc] = useState('');
@@ -81,20 +81,46 @@ function App() {
   );
 }
 
+function Component2() {
+  const [status, setStatus] = useState('');
+  const [selectedAudioSrc, setSelectedAudioSrc] = useState('');
+  const selectedAudioRef = useRef(null);
+
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+      const audioUrl = reader.result;
+      setSelectedAudioSrc(audioUrl);
+      setStatus('Audio file loaded successfully!');
+    };
+    reader.readAsDataURL(file);
+  };
+
+  return (
+    <div>
+      <audio ref={selectedAudioRef} controls className="audioposition" src={selectedAudioSrc} />
+      <label htmlFor="fileInput">Select a WAV file</label>
+      <input id="fileInput" type="file" accept="audio/wav" className="file-input2" onChange={handleFileSelect} />
+    </div>
+  );
+}
+
+function App() {
+  const [showComponent1, setShowComponent1] = useState(true);
+
+  const handleButtonClick = () => {
+    setShowComponent1(!showComponent1);
+  };
+
+  return (
+    <div className="App">
+      <div className="button-wrapper">
+        <button onClick={handleButtonClick}>{showComponent1 ? 'Editar som' : 'Gravar'}</button>
+      </div>
+      {showComponent1 ? <Component1 /> : <Component2 />}
+    </div>
+  );
+}
+
 export default App;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

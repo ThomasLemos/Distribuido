@@ -132,5 +132,15 @@ audio.top {
   transform: translate(-50%, -50%);
 }
 
+.button-wrapper {
+  width: 100px;
+  height: 40px;
+  font-size: 18px;
+}
 
+.file-input2 {
+  margin-top: 115px;
+  margin-bottom: 50px;
+  margin-left: 50px;
+}
 
