@@ -10,8 +10,8 @@ Como React e Flask interagem:
 
 O usuário interage com a interface do usuário do React clicando em botões ou preenchendo formulários.
 No meu caso eu utilizo botões para que o usuario grave audio ou modifique .
-Quando o usuário executa uma ação que requer dados do servidor, o React envia uma solicitação HTTP para a API Flask usando uma biblioteca como Axios ou a API de busca integrada.
+Quando o usuário executa uma ação que requer dados do servidor, o React envia uma solicitação HTTP para a API Flask.
 A API do Flask recebe a solicitação e a processa de acordo com a lógica de negócios definida no código do lado do servidor. 
 Depois que a Flask API processa a solicitação, ela retorna uma resposta ao React. Essa resposta indica se a solicitação foi bem-sucedida ou não.
 O React recebe a resposta da API do Flask e atualiza a interface do usuário de acordo.
-No geral, o React e o Flask trabalham juntos para criar um aplicativo da Web dinâmico que pode responder às interações do usuário em tempo real. Aproveitando os pontos fortes de ambas as tecnologias, os desenvolvedores podem criar aplicativos da Web poderosos e responsivos que fornecem uma experiência de usuário perfeita.
+No geral, o React e o Flask trabalham juntos para criar um aplicativo da Web dinâmico que pode responder às interações do usuário em tempo real.
