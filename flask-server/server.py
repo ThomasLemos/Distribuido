@@ -37,6 +37,7 @@ def save_audio2():
     pitch_shift = request.form.get('shift')
     audio_file = request.files['file']
     y, sr = librosa.load(audio_file, sr=None)
+    
     y_shifted = librosa.effects.pitch_shift(y, sr=sr, n_steps=pitch_shift)
     file_path = os.path.join('audio', file_name)
     sf.write(file_path, y_shifted, sr)

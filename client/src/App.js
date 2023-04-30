@@ -108,7 +108,7 @@ function Component2() {
     fetch(selectedAudioSrc)
       .then(response => response.blob())
       .then(audioBlob => {
-        const fileName = window.prompt('Please enter a file name', selectedFileName);
+        const fileName = window.prompt('Please enter a file name', selectedFileName.replace('.wav', ''));
         if (fileName) {
           let pitchShift = window.prompt('Please enter the pitch shift value', '0');
           pitchShift = Number(pitchShift);
@@ -136,8 +136,10 @@ function Component2() {
       <audio ref={selectedAudioRef} controls className="audioposition" src={selectedAudioSrc} />
       <label htmlFor="fileInput">Select a WAV file</label>
       <input id="fileInput" type="file" accept="audio/wav" className="file-input2" onChange={handleFileSelect} />
-      <button onClick={newPitch}>Pitch</button>
       <div>{status}</div>
+      <div className="button-container">
+        <button onClick={newPitch}>Pitch</button>
+      </div>
     </div>
   );
 }
