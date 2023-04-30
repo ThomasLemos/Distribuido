@@ -24,7 +24,7 @@ function Component1() {
         const audioUrl = URL.createObjectURL(audioBlob);
         setAudioSrc(audioUrl);
         setStatus('Audio recorded successfully!');
-        const fileName = window.prompt('Please enter a file name', 'recording.wav');
+        const fileName = window.prompt('Please enter a file name', 'recording');
         if (fileName) {
           fetch(`/api/save-audio?file_name=${fileName}`, { method: 'POST', body: audioBlob })
             .then(response => response.text())
@@ -84,6 +84,7 @@ function Component1() {
 function Component2() {
   const [status, setStatus] = useState('');
   const [selectedAudioSrc, setSelectedAudioSrc] = useState('');
+  const [selectedFileName, setSelectedFileName] = useState('');
   const selectedAudioRef = useRef(null);
 
   const handleFileSelect = (event) => {
@@ -92,16 +93,51 @@ function Component2() {
     reader.onload = () => {
       const audioUrl = reader.result;
       setSelectedAudioSrc(audioUrl);
+      setSelectedFileName(file.name);
       setStatus('Audio file loaded successfully!');
     };
     reader.readAsDataURL(file);
   };
+
+  const newPitch = () => {
+    if (!selectedAudioSrc) {
+      setStatus('Please select an audio file first.');
+      return;
+    }
+
+    fetch(selectedAudioSrc)
+      .then(response => response.blob())
+      .then(audioBlob => {
+        const fileName = window.prompt('Please enter a file name', selectedFileName);
+        if (fileName) {
+          let pitchShift = window.prompt('Please enter the pitch shift value', '0');
+          pitchShift = Number(pitchShift);
+          if (isNaN(pitchShift)) {
+            setStatus('Invalid pitch shift value. Please enter a valid number.');
+            return;
+          }
+          const formData = new FormData();
+          formData.append('file_name', fileName + '_pitch_' + pitchShift);
+          formData.append('shift', pitchShift);
+          formData.append('file', audioBlob);
+          fetch('/api/save-audio/pitch', { method: 'POST', body: formData })
+            .then(response => response.text())
+            .then(fileName => setStatus(`Audio saved successfully as ${fileName}!`))
+            .catch(() => setStatus('Error saving audio file'));
+        }
+      })
+      .catch(() => setStatus('Error loading audio file'));
+  };
+
+
 
   return (
     <div>
       <audio ref={selectedAudioRef} controls className="audioposition" src={selectedAudioSrc} />
       <label htmlFor="fileInput">Select a WAV file</label>
       <input id="fileInput" type="file" accept="audio/wav" className="file-input2" onChange={handleFileSelect} />
+      <button onClick={newPitch}>Pitch</button>
+      <div>{status}</div>
     </div>
   );
 }
