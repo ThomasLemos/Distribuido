@@ -85,6 +85,19 @@ def save_audio5():
     sf.write(file_path, y_preemphasized, sr)
     return file_name
 
+@app.route('/api/save-audio/harmonic', methods=['POST'])
+def save_audio6():
+    file_name = request.form.get('file_name')
+    if not file_name.endswith('.wav'):
+        file_name += '.wav'
+    harmonic = request.form.get('harmonic')
+    audio_file = request.files['file']
+    y, sr = librosa.load(audio_file, sr=None)
+
+    y_harmonic = librosa.effects.harmonic(y, margin=1.0)
+    file_path = os.path.join('audio', file_name)
+    sf.write(file_path, y_harmonic, sr)
+    return file_name
 
 
 

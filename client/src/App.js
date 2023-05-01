@@ -219,6 +219,37 @@ function Component2() {
       .catch(() => setStatus('Error loading audio file'));
   };
 
+  const newHarmonic = () => {
+    if (!selectedAudioSrc) {
+      setStatus('Please select an audio file first.');
+      return;
+    }
+
+    fetch(selectedAudioSrc)
+      .then(response => response.blob())
+      .then(audioBlob => {
+        const fileName = window.prompt('Please enter a file name', selectedFileName.replace('.wav', ''));
+        if (fileName) {
+          let preemphasis = window.prompt('Please enter the harmonic value', '1');
+          preemphasis = parseFloat(preemphasis);
+          if (isNaN(preemphasis)) {
+            setStatus('Invalid harmonic value. Please enter a valid number.');
+            return;
+          }
+          const formData = new FormData();
+          formData.append('file_name', fileName + '_harmonic_' + preemphasis);
+          formData.append('harmonic', preemphasis);
+          formData.append('file', audioBlob);
+          fetch('/api/save-audio/harmonic', { method: 'POST', body: formData })
+            .then(response => response.text())
+            .then(fileName => setStatus(`Audio saved successfully as ${fileName}!`))
+            .catch(() => setStatus('Error saving audio file'));
+        }
+      })
+      .catch(() => setStatus('Error loading audio file'));
+  };
+
+
   return (
     <div>
       <audio ref={selectedAudioRef} controls className="audioposition" src={selectedAudioSrc} />
@@ -236,6 +267,9 @@ function Component2() {
       </div>
       <div className="button-container">
         <button onClick={newPreemphasis}>Pre-emphasis</button>
+      </div>
+      <div className="button-container">
+        <button onClick={newHarmonic}>Harmonic</button>
       </div>
     </div>
   );
