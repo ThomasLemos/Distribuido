@@ -51,10 +51,24 @@ def save_audio3():
     time_stretch = request.form.get('stretch')
     audio_file = request.files['file']
     y, sr = librosa.load(audio_file, sr=None)
-    print(time_stretch)
+    
     y_stretched = librosa.effects.time_stretch(y, rate=float(time_stretch))
     file_path = os.path.join('audio', file_name)
     sf.write(file_path, y_stretched, sr)
+    return file_name
+
+@app.route('/api/save-audio/trim', methods=['POST'])
+def save_audio4():
+    file_name = request.form.get('file_name')
+    if not file_name.endswith('.wav'):
+        file_name += '.wav'
+    top_db = request.form.get('top_db')
+    audio_file = request.files['file']
+    y, sr = librosa.load(audio_file, sr=None)
+
+    y_trimmed, index = librosa.effects.trim(y, top_db=int(top_db))
+    file_path = os.path.join('audio', file_name)
+    sf.write(file_path, y_trimmed, sr)
     return file_name
 
 

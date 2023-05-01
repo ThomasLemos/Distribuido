@@ -140,15 +140,15 @@ function Component2() {
       .then(audioBlob => {
         const fileName = window.prompt('Please enter a file name', selectedFileName.replace('.wav', ''));
         if (fileName) {
-          let pitchShift = window.prompt('Please enter the new duration value', '0');
-          pitchShift = parseFloat(pitchShift);
-          if (isNaN(pitchShift)) {
-            setStatus('Invalid pitch shift value. Please enter a valid number.');
+          let duration = window.prompt('Please enter the new duration value', '1');
+          duration = parseFloat(duration);
+          if (isNaN(duration)) {
+            setStatus('Invalid duration value. Please enter a valid number.');
             return;
           }
           const formData = new FormData();
-          formData.append('file_name', fileName + '_time-stretch_' + pitchShift);
-          formData.append('stretch', pitchShift);
+          formData.append('file_name', fileName + '_time-stretch_' + duration);
+          formData.append('stretch', duration);
           formData.append('file', audioBlob);
           fetch('/api/save-audio/time-stretch', { method: 'POST', body: formData })
             .then(response => response.text())
@@ -159,6 +159,35 @@ function Component2() {
       .catch(() => setStatus('Error loading audio file'));
   };
 
+  const newTrimm = () => {
+    if (!selectedAudioSrc) {
+      setStatus('Please select an audio file first.');
+      return;
+    }
+
+    fetch(selectedAudioSrc)
+      .then(response => response.blob())
+      .then(audioBlob => {
+        const fileName = window.prompt('Please enter a file name', selectedFileName.replace('.wav', ''));
+        if (fileName) {
+          let trimm = window.prompt('Please enter the trimm value', '60');
+          trimm = parseFloat(trimm);
+          if (isNaN(trimm)) {
+            setStatus('Invalid trimm value. Please enter a valid number.');
+            return;
+          }
+          const formData = new FormData();
+          formData.append('file_name', fileName + '_trimm_' + trimm);
+          formData.append('top_db', trimm);
+          formData.append('file', audioBlob);
+          fetch('/api/save-audio/trim', { method: 'POST', body: formData })
+            .then(response => response.text())
+            .then(fileName => setStatus(`Audio saved successfully as ${fileName}!`))
+            .catch(() => setStatus('Error saving audio file'));
+        }
+      })
+      .catch(() => setStatus('Error loading audio file'));
+  };
 
   return (
     <div>
@@ -171,6 +200,9 @@ function Component2() {
       </div>
       <div className="button-container">
         <button onClick={newTimeStretch}>Duração</button>
+      </div>
+      <div className="button-container">
+        <button onClick={newTrimm}>Trimm</button>
       </div>
     </div>
   );
