@@ -279,6 +279,29 @@ function Component2() {
         .catch(() => setStatus('Error loading audio file'));
 };
 
+const newRemix = () => {
+  if (!selectedAudioSrc) {
+    setStatus('Please select an audio file first.');
+    return;
+  }
+
+  fetch(selectedAudioSrc)
+    .then(response => response.blob())
+    .then(audioBlob => {
+      const fileName = window.prompt('Please enter a file name', selectedFileName.replace('.wav', ''));
+      if (fileName) {
+        const formData = new FormData();
+        formData.append('file_name', fileName + '_remix');
+        formData.append('file', audioBlob);
+        fetch('/api/save-audio/remix', { method: 'POST', body: formData })
+          .then(response => response.text())
+          .then(fileName => setStatus(`Audio saved successfully as ${fileName}!`))
+          .catch(() => setStatus('Error saving audio file'));
+      }
+    })
+    .catch(() => setStatus('Error loading audio file'));
+};
+
   return (
     <div>
       <audio ref={selectedAudioRef} controls className="audioposition" src={selectedAudioSrc} />
@@ -302,6 +325,9 @@ function Component2() {
       </div>
       <div className="button-container">
         <button onClick={newPercussive}>Percussive</button>
+      </div>
+      <div className="button-container">
+        <button onClick={newRemix}>Remix</button>
       </div>
     </div>
   );

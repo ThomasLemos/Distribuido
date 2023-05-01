@@ -114,6 +114,26 @@ def save_audio7():
     sf.write(file_path, y_percussive, sr)
     return file_name
 
+@app.route('/api/save-audio/remix', methods=['POST'])
+def save_audio8():
+    file_name = request.form.get('file_name')
+    if not file_name.endswith('.wav'):
+        file_name += '.wav'
+    audio_file = request.files['file']
+
+    y, sr = librosa.load(audio_file, sr=None)
+    
+    _, beat_frames = librosa.beat.beat_track(y=y, sr=sr, hop_length=512)
+    beat_samples = librosa.frames_to_samples(beat_frames)
+    intervals = librosa.util.frame(beat_samples, frame_length=2, hop_length=1).T
+    y_out = librosa.effects.remix(y, intervals[::-1])
+    
+    save_path = os.path.join('audio', file_name)
+    sf.write(save_path, y_out, sr)
+    
+    return jsonify({'message': 'File saved successfully.'})
+
+
 
 if __name__ == '__main__':
     app.run()
