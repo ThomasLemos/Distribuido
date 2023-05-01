@@ -129,6 +129,35 @@ function Component2() {
       .catch(() => setStatus('Error loading audio file'));
   };
 
+  const newTimeStretch = () => {
+    if (!selectedAudioSrc) {
+      setStatus('Please select an audio file first.');
+      return;
+    }
+
+    fetch(selectedAudioSrc)
+      .then(response => response.blob())
+      .then(audioBlob => {
+        const fileName = window.prompt('Please enter a file name', selectedFileName.replace('.wav', ''));
+        if (fileName) {
+          let pitchShift = window.prompt('Please enter the new duration value', '0');
+          pitchShift = parseFloat(pitchShift);
+          if (isNaN(pitchShift)) {
+            setStatus('Invalid pitch shift value. Please enter a valid number.');
+            return;
+          }
+          const formData = new FormData();
+          formData.append('file_name', fileName + '_time-stretch_' + pitchShift);
+          formData.append('stretch', pitchShift);
+          formData.append('file', audioBlob);
+          fetch('/api/save-audio/time-stretch', { method: 'POST', body: formData })
+            .then(response => response.text())
+            .then(fileName => setStatus(`Audio saved successfully as ${fileName}!`))
+            .catch(() => setStatus('Error saving audio file'));
+        }
+      })
+      .catch(() => setStatus('Error loading audio file'));
+  };
 
 
   return (
@@ -139,6 +168,9 @@ function Component2() {
       <div>{status}</div>
       <div className="button-container">
         <button onClick={newPitch}>Pitch</button>
+      </div>
+      <div className="button-container">
+        <button onClick={newTimeStretch}>Duração</button>
       </div>
     </div>
   );
