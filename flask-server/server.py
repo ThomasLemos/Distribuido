@@ -71,6 +71,20 @@ def save_audio4():
     sf.write(file_path, y_trimmed, sr)
     return file_name
 
+@app.route('/api/save-audio/preemphasis', methods=['POST'])
+def save_audio5():
+    file_name = request.form.get('file_name')
+    if not file_name.endswith('.wav'):
+        file_name += '.wav'
+    coefficient = request.form.get('coefficient')
+    audio_file = request.files['file']
+    y, sr = librosa.load(audio_file, sr=None)
+    
+    y_preemphasized = librosa.effects.preemphasis(y, coef=float(coefficient))
+    file_path = os.path.join('audio', file_name)
+    sf.write(file_path, y_preemphasized, sr)
+    return file_name
+
 
 
 

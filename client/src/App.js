@@ -189,6 +189,36 @@ function Component2() {
       .catch(() => setStatus('Error loading audio file'));
   };
 
+  const newPreemphasis = () => {
+    if (!selectedAudioSrc) {
+      setStatus('Please select an audio file first.');
+      return;
+    }
+
+    fetch(selectedAudioSrc)
+      .then(response => response.blob())
+      .then(audioBlob => {
+        const fileName = window.prompt('Please enter a file name', selectedFileName.replace('.wav', ''));
+        if (fileName) {
+          let preemphasis = window.prompt('Please enter the pre-emphasis value', '0.97');
+          preemphasis = parseFloat(preemphasis);
+          if (isNaN(preemphasis)) {
+            setStatus('Invalid pre-emphasis value. Please enter a valid number.');
+            return;
+          }
+          const formData = new FormData();
+          formData.append('file_name', fileName + '_preemphasis_' + preemphasis);
+          formData.append('coefficient', preemphasis);
+          formData.append('file', audioBlob);
+          fetch('/api/save-audio/preemphasis', { method: 'POST', body: formData })
+            .then(response => response.text())
+            .then(fileName => setStatus(`Audio saved successfully as ${fileName}!`))
+            .catch(() => setStatus('Error saving audio file'));
+        }
+      })
+      .catch(() => setStatus('Error loading audio file'));
+  };
+
   return (
     <div>
       <audio ref={selectedAudioRef} controls className="audioposition" src={selectedAudioSrc} />
@@ -203,6 +233,9 @@ function Component2() {
       </div>
       <div className="button-container">
         <button onClick={newTrimm}>Trimm</button>
+      </div>
+      <div className="button-container">
+        <button onClick={newPreemphasis}>Pre-emphasis</button>
       </div>
     </div>
   );
